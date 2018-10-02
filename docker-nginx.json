@@ -1,0 +1,40 @@
+{
+  "variables": {                
+    "docker_hub_username": "{{ env `DOCKER_HUB_USERNAME` }}",
+    "docker_hub_password": "{{ env `DOCKER_HUB_PASSWORD` }}",
+    "tag_version": "0.{{timestamp}}"
+  },
+  "builders": [{
+    "type": "docker",
+    "image": "nginx",
+    "commit": true
+  }],
+  "post-processors": [
+    [
+      {
+        "type": "docker-tag",
+        "repository": "{{user `docker_hub_username`}}/test-nginx",
+        "tag": "{{user `tag_version`}}"
+      },
+      {
+        "type": "docker-push",
+        "login": true,
+        "login_username": "{{user `docker_hub_username`}}",
+        "login_password": "{{user `docker_hub_password`}}"
+      }
+    ],
+    [
+      {
+        "type": "docker-tag",
+        "repository": "{{user `docker_hub_username`}}/test-nginx",
+        "tag": "latest"
+      },
+      {
+        "type": "docker-push",
+        "login": true,
+        "login_username": "{{user `docker_hub_username`}}",
+        "login_password": "{{user `docker_hub_password`}}"
+      }
+    ]
+  ]
+}
